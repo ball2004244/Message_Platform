@@ -1,0 +1,8 @@
+<RCC>
+  <qresource prefix="newPrefix">
+    <file>snapchat_logo.png</file>
+    <file>instagram_logo.png</file>
+    <file>facebook_logo.png</file>
+    <file>google_logo.png</file>
+  </qresource>
+</RCC>
