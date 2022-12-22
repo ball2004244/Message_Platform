@@ -2,26 +2,33 @@ import threading
 import socketserver
 
 class ChatHandler(socketserver.BaseRequestHandler):
-    clients = []
+    def __init__(self, request, client_address, server):
+        self.clients = []
+        super().__init__(request, client_address, server)
 
     def handle(self):
         # Add the client to the list of clients
-        self.__class__.clients.append(self.request)
+        self.clients.append(self.request)
 
         # Continuously receive messages from the client and broadcast them to all clients
         while True:
             data = self.request.recv(1024)
             if not data:
                 break
-
-            for client in self.__class__.clients:
+            
+            # here to process private message
+            # 
+            for client in self.clients:
                 client.sendall(data)
                 text = data.decode('utf-8') 
                 print(text)
 
         # Remove the client from the list of clients
-        self.__class__.clients.remove(self.request)
+        self.clients.remove(self.request)
 
+    def private_message(self, user1, user2):
+        pass 
+    
 class ChatServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
     pass
 

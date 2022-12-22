@@ -359,8 +359,6 @@ border-radius: 20px;
    </widget>
   </widget>
  </widget>
- <resources>
-  <include location="Resource/facebook.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

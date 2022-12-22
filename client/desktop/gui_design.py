@@ -1,8 +1,10 @@
 import sys
+import os 
+import socket
 from PyQt5.uic import loadUi
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
-from PyQt5.QtCore import QEventLoop, QTimer
+from PyQt5.QtCore import QTimer
 from PyQt5.QtNetwork import QTcpSocket
 
 from server.database import database
@@ -13,7 +15,12 @@ class LoginScreen(QDialog):
         super(LoginScreen, self).__init__()
         loadUi('client/desktop/GUI/login.ui', self) 
 
+        self.email.setMaxLength(45)
+        self.email.returnPressed.connect(self.password.setFocus)
+
+        self.password.setMaxLength(45)
         self.password.setEchoMode(QLineEdit.Password)
+        self.password.returnPressed.connect(self.logIn)
 
         self.login_button.clicked.connect(self.logIn)
         self.signup_button.clicked.connect(self.signUp)
@@ -22,7 +29,7 @@ class LoginScreen(QDialog):
         self.instagram_button.clicked.connect(self.authInstagram)
         self.google_button.clicked.connect(self.authGoogle)
         self.snapchat_button.clicked.connect(self.authSnapchat)
-
+    
     def logIn(self):
         # get email from input
         email = self.email.text().strip()
@@ -34,7 +41,7 @@ class LoginScreen(QDialog):
             login = False 
 
         # check if account already in database
-        all_user_data = database.get_all_data()
+        all_user_data = database.get_all_user()
         if all_user_data:
             for user in all_user_data:
                 if email == user['email']:
@@ -72,11 +79,22 @@ class LoginScreen(QDialog):
         widget_stack.addWidget(sign_up_screen)
         widget_stack.setCurrentIndex(1)
 
-
 class RegisterScreen(QMainWindow):
     def __init__(self):
         super(RegisterScreen, self).__init__()
         loadUi('client/desktop/GUI/register.ui', self)
+
+        self.email.setMaxLength(45)
+        self.password.setMaxLength(45)
+        self.confirm_password.setMaxLength(45)
+        self.first_name.setMaxLength(45)
+        self.last_name.setMaxLength(45)
+
+        self.email.returnPressed.connect(self.password.setFocus)
+        self.password.returnPressed.connect(self.confirm_password.setFocus)
+        self.confirm_password.returnPressed.connect(self.first_name.setFocus)
+        self.first_name.returnPressed.connect(self.last_name.setFocus)
+
         self.login_button.clicked.connect(self.gotoLogIn)
         self.signup_button.clicked.connect(self.gotoSignUp)
         self.password.setEchoMode(QLineEdit.Password)
@@ -102,7 +120,7 @@ class RegisterScreen(QMainWindow):
             register = False
 
         # check if account already in database
-        user_data = database.get_all_data()
+        user_data = database.get_all_user()
         for user in user_data:
             if email == user['email']:
                 print('User existed, Try again')
@@ -120,16 +138,77 @@ class RegisterScreen(QMainWindow):
         widget_stack.setCurrentIndex(0)
         widget_stack.removeWidget(widget_stack.widget(1))
 
-
 class HomeScreen(QMainWindow):
     def __init__(self):
         super(HomeScreen, self).__init__()
         loadUi('client/desktop/GUI/home.ui', self)
-        self.logout_button.clicked.connect(self.gotoLogIn)
 
-        self.name.setText(f"Welcome {user_data['first_name']} {user_data['last_name']}")
+        self.logout_button.clicked.connect(self.gotoLogIn)   
         self.send_button.clicked.connect(self.sendMessage)
+        self.text_field.returnPressed.connect(self.sendMessage)
+        self.text_field.setMaxLength(100)
 
+        self.setUpAvatar()
+        self.setUpFriendLayout()
+        self.setUpServerConnection()
+
+    def setUpFriendLayout(self):
+        # set up toggle button
+        self.show_friend = False
+        self.text_browser.raise_()
+        self.friend_button.clicked.connect(self.toggleFriendButton)
+
+        # add all friends to list
+        self.friend_list = [] 
+        friend_id = []
+        friendships = database.get_friendship(user_data['id'])
+
+        for friendship in friendships:
+            if user_data['id'] == friendship['user_id']:
+                friend_id.append(friendship['friend_id'])
+            else:
+                friend_id.append(friendship['user_id'])
+
+        for id in friend_id:
+            self.friend_list.append(f"{database.get_user(id)[0]['first_name']} {database.get_user(id)[0]['last_name']}")
+
+        # convert friend list to UI button
+        for friend in self.friend_list:
+            friend_widget = FriendWidget(friend)
+            self.friend_layout.addWidget(friend_widget)
+
+        # format layout 
+        self.friend_layout.setSpacing(0)
+        self.friend_layout.setContentsMargins(0, 0, 0, 0)
+
+    def toggleFriendButton(self):
+        if self.show_friend:
+            self.text_browser.raise_()
+            self. show_friend = False 
+        else:
+            self.text_browser.lower()
+            self. show_friend = True
+
+    def setUpAvatar(self):
+        self.name.setText(f"{user_data['first_name']} {user_data['last_name']}")
+
+        
+        try: 
+            path = database.get_avatar(user_data['id'])['path']
+            
+            if not os.path.isfile(path): 
+                raise FileNotFoundError
+
+        except Exception:
+            # default image
+            path = 'client/desktop/GUI/Resource/default_avatar.png'
+
+        pixmap = QPixmap(path)
+        avatar = QIcon(pixmap)
+        
+        self.avatar.setIcon(avatar)
+
+    def setUpServerConnection(self):
         # set up socket for message send-receive
         self.socket = QTcpSocket(self)
 
@@ -147,10 +226,19 @@ class HomeScreen(QMainWindow):
         self.timer.start()
 
     def sendMessage(self):
-        text = self.text_field.toMarkdown().strip() # formated text 
-        debug_text = self.text_field.toPlainText().strip()
+        '''
+        DATA FORMAT: Dictionary
+        {
+            "type": "private"/"public"
+            "sender": user_id,
+            "receiver": friend_id, 
+            "message": message
+        }
+        '''
+        # text = self.text_field.toMarkdown().strip() # formated text 
+        debug_text = self.text_field.text().strip()
 
-        if not len(text):
+        if not len(debug_text):
             print('Cannot sending blank text')
         else:
             print('client:', debug_text)
@@ -168,6 +256,7 @@ class HomeScreen(QMainWindow):
         else:
             print('Looking For Data From Server')
 
+
     def gotoLogIn(self):
         #log out 
         self.socket.close()
@@ -175,6 +264,18 @@ class HomeScreen(QMainWindow):
         
         widget_stack.setCurrentIndex(0)
         widget_stack.removeWidget(widget_stack.widget(1))
+
+class FriendWidget(QWidget):
+    def __init__(self, name: str):
+        super().__init__()
+        self.layout = QVBoxLayout(self)
+        self.button = QPushButton(name, self)
+        self.button.setStyleSheet("border-radius: 20px; background-color: rgb(246, 224, 181); font: 75 18pt 'MS Shell Dlg 2';")
+        self.layout.addWidget(self.button)
+
+        self.layout.setSpacing(0)
+        self.layout.setContentsMargins(0, 0, 0, 0)
+        self.setLayout(self.layout)
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

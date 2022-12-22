@@ -32,9 +32,9 @@ background-color:rgb(102, 84, 94)}
      <property name="geometry">
       <rect>
        <x>40</x>
-       <y>110</y>
+       <y>90</y>
        <width>900</width>
-       <height>400</height>
+       <height>511</height>
       </rect>
      </property>
      <property name="styleSheet">
@@ -44,34 +44,11 @@ font-size: 20px;
 color: black;</string>
      </property>
     </widget>
-    <widget class="QTextEdit" name="text_field">
-     <property name="geometry">
-      <rect>
-       <x>40</x>
-       <y>610</y>
-       <width>900</width>
-       <height>80</height>
-      </rect>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">border-radius: 20px;
-background-color: &quot;white&quot;;
-font-size: 20px;
-color: black;</string>
-     </property>
-     <property name="html">
-      <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:20px; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-     </property>
-    </widget>
     <widget class="Line" name="line">
      <property name="geometry">
       <rect>
        <x>50</x>
-       <y>550</y>
+       <y>610</y>
        <width>891</width>
        <height>20</height>
       </rect>
@@ -87,7 +64,7 @@ p, li { white-space: pre-wrap; }
      <property name="geometry">
       <rect>
        <x>410</x>
-       <y>720</y>
+       <y>730</y>
        <width>190</width>
        <height>40</height>
       </rect>
@@ -104,18 +81,22 @@ font: 75 18pt &quot;MS Shell Dlg 2&quot;;</string>
     <widget class="QLabel" name="name">
      <property name="geometry">
       <rect>
-       <x>50</x>
-       <y>0</y>
-       <width>651</width>
-       <height>111</height>
+       <x>620</x>
+       <y>35</y>
+       <width>250</width>
+       <height>50</height>
       </rect>
      </property>
      <property name="styleSheet">
-      <string notr="true">font: 75 36pt &quot;MS Shell Dlg 2&quot;; 
-color: rgb(246, 224, 181);</string>
+      <string notr="true">font: 75 20pt &quot;MS Shell Dlg 2&quot;; 
+color: rgb(246, 224, 181);
+text-align: right;</string>
      </property>
      <property name="text">
-      <string>Welcome FirstName LastName</string>
+      <string> FirstName LastName</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
      </property>
     </widget>
     <widget class="QPushButton" name="logout_button">
@@ -152,11 +133,145 @@ border-radius: 20px;
       <bool>false</bool>
      </property>
     </widget>
+    <widget class="QLineEdit" name="text_field">
+     <property name="geometry">
+      <rect>
+       <x>40</x>
+       <y>640</y>
+       <width>900</width>
+       <height>80</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">border-radius: 20px;
+font-size: 20px;
+color: black;</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="friend_button">
+     <property name="geometry">
+      <rect>
+       <x>50</x>
+       <y>35</y>
+       <width>50</width>
+       <height>50</height>
+      </rect>
+     </property>
+     <property name="autoFillBackground">
+      <bool>false</bool>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color:rgb(102, 84, 94);
+border-radius: 20px;
+</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="icon">
+      <iconset>
+       <normaloff>Resource/friend.png</normaloff>Resource/friend.png</iconset>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>50</width>
+       <height>50</height>
+      </size>
+     </property>
+     <property name="default">
+      <bool>false</bool>
+     </property>
+    </widget>
+    <widget class="QWidget" name="verticalLayoutWidget">
+     <property name="geometry">
+      <rect>
+       <x>40</x>
+       <y>90</y>
+       <width>251</width>
+       <height>511</height>
+      </rect>
+     </property>
+     <layout class="QVBoxLayout" name="friend_layout">
+      <item>
+       <widget class="QPushButton" name="pushButton">
+        <property name="styleSheet">
+         <string notr="true">border-radius: 20px;
+background-color: rgb(246, 224, 181);
+font: 75 18pt &quot;MS Shell Dlg 2&quot;;</string>
+        </property>
+        <property name="text">
+         <string>General</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+    <widget class="QPushButton" name="avatar">
+     <property name="geometry">
+      <rect>
+       <x>880</x>
+       <y>35</y>
+       <width>50</width>
+       <height>50</height>
+      </rect>
+     </property>
+     <property name="cursor">
+      <cursorShape>ArrowCursor</cursorShape>
+     </property>
+     <property name="autoFillBackground">
+      <bool>false</bool>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color:rgb(102, 84, 94);
+border-radius: 20px;
+</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="icon">
+      <iconset>
+       <normaloff>Resource/default_avatar.png</normaloff>Resource/default_avatar.png</iconset>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>50</width>
+       <height>50</height>
+      </size>
+     </property>
+     <property name="default">
+      <bool>false</bool>
+     </property>
+    </widget>
+    <widget class="QTextBrowser" name="text_browser_2">
+     <property name="geometry">
+      <rect>
+       <x>40</x>
+       <y>90</y>
+       <width>251</width>
+       <height>511</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">border-radius: 20px;
+background-color: rgb(246, 224, 181);
+font: 75 18pt &quot;MS Shell Dlg 2&quot;;</string>
+     </property>
+    </widget>
+    <zorder>text_browser</zorder>
+    <zorder>text_browser_2</zorder>
+    <zorder>line</zorder>
+    <zorder>send_button</zorder>
+    <zorder>name</zorder>
+    <zorder>logout_button</zorder>
+    <zorder>text_field</zorder>
+    <zorder>friend_button</zorder>
+    <zorder>verticalLayoutWidget</zorder>
+    <zorder>avatar</zorder>
    </widget>
   </widget>
  </widget>
  <resources>
-  <include location="Resource/facebook.qrc"/>
   <include location="Resource/facebook.qrc"/>
  </resources>
  <connections/>
