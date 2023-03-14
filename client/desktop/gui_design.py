@@ -1,5 +1,5 @@
 import sys
-import os 
+import os
 import socket
 from PyQt5.uic import loadUi
 from PyQt5.QtGui import *
@@ -10,10 +10,11 @@ from PyQt5.QtNetwork import QTcpSocket
 from server.database import database
 from security import hash_password, compare_hashes
 
+
 class LoginScreen(QDialog):
     def __init__(self):
         super(LoginScreen, self).__init__()
-        loadUi('client/desktop/GUI/login.ui', self) 
+        loadUi('client/desktop/GUI/login.ui', self)
 
         self.email.setMaxLength(45)
         self.email.returnPressed.connect(self.password.setFocus)
@@ -24,12 +25,12 @@ class LoginScreen(QDialog):
 
         self.login_button.clicked.connect(self.logIn)
         self.signup_button.clicked.connect(self.signUp)
-        
+
         self.facebook_button.clicked.connect(self.authFacebook)
         self.instagram_button.clicked.connect(self.authInstagram)
         self.google_button.clicked.connect(self.authGoogle)
         self.snapchat_button.clicked.connect(self.authSnapchat)
-    
+
     def logIn(self):
         # get email from input
         email = self.email.text().strip()
@@ -38,7 +39,7 @@ class LoginScreen(QDialog):
 
         if not (len(email) and len(password)):
             print('You must fill in both fields')
-            login = False 
+            login = False
 
         # check if account already in database
         all_user_data = database.get_all_user()
@@ -49,9 +50,10 @@ class LoginScreen(QDialog):
                     if compare_hashes(hash_password(password.encode('utf-8')), user['password']):
                         login = True
                         global user_data
-                        user_data = {'id': user['id'], 'email': user['email'], 'first_name': user['first_name'], 'last_name': user['last_name']}
+                        user_data = {'id': user['id'], 'email': user['email'],
+                                     'first_name': user['first_name'], 'last_name': user['last_name']}
                         break
-    
+
         if login:
             self.goToHomeScreen()
         else:
@@ -59,16 +61,16 @@ class LoginScreen(QDialog):
 
     def authFacebook(self):
         print('Access Facebook')
-    
+
     def authInstagram(self):
         print('Access Instagram')
-    
+
     def authGoogle(self):
         print('Access Google')
-    
+
     def authSnapchat(self):
         print('Access Snapchat')
-    
+
     def goToHomeScreen(self):
         home_screen = HomeScreen()
         widget_stack.addWidget(home_screen)
@@ -78,6 +80,7 @@ class LoginScreen(QDialog):
         sign_up_screen = RegisterScreen()
         widget_stack.addWidget(sign_up_screen)
         widget_stack.setCurrentIndex(1)
+
 
 class RegisterScreen(QMainWindow):
     def __init__(self):
@@ -101,7 +104,7 @@ class RegisterScreen(QMainWindow):
         self.confirm_password.setEchoMode(QLineEdit.Password)
 
     def gotoSignUp(self):
-        # get data from user input 
+        # get data from user input
         email = self.email.text().strip()
         password = self.password.text().strip()
         confirm_password = self.confirm_password.text().strip()
@@ -128,9 +131,9 @@ class RegisterScreen(QMainWindow):
 
         # add account to database
         if register:
-            #encrypt password
+            # encrypt password
             encrypted_password = hash_password(password.encode('utf-8'))
-            
+
             database.add_user(email, encrypted_password, first_name, last_name)
             self.gotoLogIn()
 
@@ -138,12 +141,13 @@ class RegisterScreen(QMainWindow):
         widget_stack.setCurrentIndex(0)
         widget_stack.removeWidget(widget_stack.widget(1))
 
+
 class HomeScreen(QMainWindow):
     def __init__(self):
         super(HomeScreen, self).__init__()
         loadUi('client/desktop/GUI/home.ui', self)
 
-        self.logout_button.clicked.connect(self.gotoLogIn)   
+        self.logout_button.clicked.connect(self.gotoLogIn)
         self.send_button.clicked.connect(self.sendMessage)
         self.text_field.returnPressed.connect(self.sendMessage)
         self.text_field.setMaxLength(100)
@@ -159,7 +163,7 @@ class HomeScreen(QMainWindow):
         self.friend_button.clicked.connect(self.toggleFriendButton)
 
         # add all friends to list
-        self.friend_list = [] 
+        self.friend_list = []
         friend_id = []
         friendships = database.get_friendship(user_data['id'])
 
@@ -170,33 +174,34 @@ class HomeScreen(QMainWindow):
                 friend_id.append(friendship['user_id'])
 
         for id in friend_id:
-            self.friend_list.append(f"{database.get_user(id)[0]['first_name']} {database.get_user(id)[0]['last_name']}")
+            self.friend_list.append(
+                f"{database.get_user(id)[0]['first_name']} {database.get_user(id)[0]['last_name']}")
 
         # convert friend list to UI button
         for friend in self.friend_list:
             friend_widget = FriendWidget(friend)
             self.friend_layout.addWidget(friend_widget)
 
-        # format layout 
+        # format layout
         self.friend_layout.setSpacing(0)
         self.friend_layout.setContentsMargins(0, 0, 0, 0)
 
     def toggleFriendButton(self):
         if self.show_friend:
             self.text_browser.raise_()
-            self. show_friend = False 
+            self.show_friend = False
         else:
             self.text_browser.lower()
-            self. show_friend = True
+            self.show_friend = True
 
     def setUpAvatar(self):
-        self.name.setText(f"{user_data['first_name']} {user_data['last_name']}")
+        self.name.setText(
+            f"{user_data['first_name']} {user_data['last_name']}")
 
-        
-        try: 
+        try:
             path = database.get_avatar(user_data['id'])['path']
-            
-            if not os.path.isfile(path): 
+
+            if not os.path.isfile(path):
                 raise FileNotFoundError
 
         except Exception:
@@ -205,7 +210,7 @@ class HomeScreen(QMainWindow):
 
         pixmap = QPixmap(path)
         avatar = QIcon(pixmap)
-        
+
         self.avatar.setIcon(avatar)
 
     def setUpServerConnection(self):
@@ -235,7 +240,7 @@ class HomeScreen(QMainWindow):
             "message": message
         }
         '''
-        # text = self.text_field.toMarkdown().strip() # formated text 
+        # text = self.text_field.toMarkdown().strip() # formated text
         debug_text = self.text_field.text().strip()
 
         if not len(debug_text):
@@ -243,39 +248,41 @@ class HomeScreen(QMainWindow):
         else:
             print('client:', debug_text)
 
-            #send message to server 
+            # send message to server
             message = f"{user_data['first_name']} {list(user_data['last_name'])[0]}: {debug_text}"
-            self.socket.write(message.encode('utf-8')) 
+            self.socket.write(message.encode('utf-8'))
             self.text_field.clear()
-    
+
     def receiveMessage(self):
-        # get message from server 
-        if self.socket.bytesAvailable(): # only retrieve if there is > 0 bytes data
+        # get message from server
+        if self.socket.bytesAvailable():  # only retrieve if there is > 0 bytes data
             message = self.socket.readAll().data()
             self.text_browser.append(message.decode('utf-8'))
         else:
             print('Looking For Data From Server')
 
-
     def gotoLogIn(self):
-        #log out 
+        # log out
         self.socket.close()
         self.timer.stop()
-        
+
         widget_stack.setCurrentIndex(0)
         widget_stack.removeWidget(widget_stack.widget(1))
+
 
 class FriendWidget(QWidget):
     def __init__(self, name: str):
         super().__init__()
         self.layout = QVBoxLayout(self)
         self.button = QPushButton(name, self)
-        self.button.setStyleSheet("border-radius: 20px; background-color: rgb(246, 224, 181); font: 75 18pt 'MS Shell Dlg 2';")
+        self.button.setStyleSheet(
+            "border-radius: 20px; background-color: rgb(246, 224, 181); font: 75 18pt 'MS Shell Dlg 2';")
         self.layout.addWidget(self.button)
 
         self.layout.setSpacing(0)
         self.layout.setContentsMargins(0, 0, 0, 0)
         self.setLayout(self.layout)
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
