@@ -27,4 +27,4 @@ Welcome to our live chatting app! With this app, you can easily connect with fri
 If you have any questions or need help with the app, please don't hesitate to contact our support team at [nguyenminhtam7124@gmail.com](mailto:nguyenminhtam7124@gmail.com). We're always happy to assist!
 
 ## Tech Stack
-PyQt5, Websocket
+PyQt5, Websocket, MySQL
